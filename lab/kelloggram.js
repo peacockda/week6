@@ -8,11 +8,8 @@ window.addEventListener('DOMContentLoaded', async function(event) {
   // - Begin by using .querySelector to select the form
   //   element, add an event listener to the 'submit' event,
   //   and preventing the default behavior.
-  function renderPost(postForRender) {
-    console.log(postForRender)
-    let postID = postForRender.id
+  function renderPost(postID, postData) {
     // console.log(postID)
-    let postData = postForRender.data()
     let postUser = postData.username
     // console.log(postUser)
     let postImageURL = postData.imageURL
@@ -80,20 +77,23 @@ window.addEventListener('DOMContentLoaded', async function(event) {
       // console.log(`New image URL is ${newImageURL}`)
       newUserNameElement.value = ''
       newImageURLElement.value = ''
-  // - Using the "db" variable, talk to Firestore. When the form is
-  //   submitted, send the data entered to Firestore by using 
-  //   db.collection('posts').add(). Along withthe username and image 
-  //   URL, add a "likes" field and set it to 0; we'll use this later.
-      docRef = await db.collection('posts').add({
+      newPostData = {
         username: newUserName,
         imageURL: newImageURL,
         likes: 0,
         created: firebase.firestore.FieldValue.serverTimestamp()
-      })
-      // Get is back and render it
-      let newPost = await db.collection('posts').doc(docRef.id).get()
-      renderPost(newPost)
-      // console.log(newPost)
+      }
+  // - Using the "db" variable, talk to Firestore. When the form is
+  //   submitted, send the data entered to Firestore by using 
+  //   db.collection('posts').add(). Along withthe username and image 
+  //   URL, add a "likes" field and set it to 0; we'll use this later.
+      newPostRef = await db.collection('posts').add(newPostData)
+      let newPostID = newPostRef.id
+      // Get it back and render it
+      // let newPost = await db.collection('posts').doc(docRef.id).get()
+      renderPost(newPostID, newPostData)
+      // console.log(newPostID)
+      // console.log(newPostData)
     }
   })
   // - Verify (in Firebase) that records are being added.
@@ -110,7 +110,8 @@ window.addEventListener('DOMContentLoaded', async function(event) {
   //   inside the loop – the post ID, the post data, the post
   //   username, and the post image URL
   for (let i = 0; i < allPosts.length; i++) {
-    renderPost(allPosts[i])
+    let postData = allPosts[i].data()
+    renderPost(allPosts[i].id, postData)
   }
 
   // Bonus:
