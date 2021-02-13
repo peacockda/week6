@@ -62,7 +62,6 @@ window.addEventListener('DOMContentLoaded', async function(event) {
       })
     })
   }
-  let db = firebase.firestore()
   let newPostForm = document.querySelector('form')
   // console.log(newPostForm)
   newPostForm.addEventListener('submit', async function(event){
